@@ -25,6 +25,7 @@ htmlcov/
 .tox/
 .nox/
 .git/
+alembic.ini
 
 # Database files
 *.db
