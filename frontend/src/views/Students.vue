@@ -129,6 +129,45 @@ const handleDelete = (row: any) => {
   }).catch(() => {})
 }
 
+const selectedIds = ref<number[]>([])
+
+const handleSelectionChange = (selection: any[]) => {
+  selectedIds.value = selection.map(item => item.id)
+}
+
+const handleBatchDelete = () => {
+  if (selectedIds.value.length === 0) return
+  ElMessageBox.confirm(`确定要删除选中的 ${selectedIds.value.length} 名学生吗？`, '警告', {
+    type: 'warning'
+  }).then(async () => {
+    // In a real app, you would have a bulk delete API. Here we just loop (or assuming backend adds bulk).
+    // For simplicity, we loop.
+    loading.value = true
+    try {
+      for (const id of selectedIds.value) {
+        await request.delete(`/students/${id}`)
+      }
+      ElMessage.success('批量删除成功')
+      fetchList()
+    } finally {
+      loading.value = false
+    }
+  }).catch(() => {})
+}
+
+const handleExport = () => {
+  const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
+  window.open(`${baseURL}/students/export?token=${localStorage.getItem('token')}`)
+}
+
+const drawerVisible = ref(false)
+const drawerData = ref<any>(null)
+
+const handleViewProfile = (row: any) => {
+  drawerData.value = row
+  drawerVisible.value = true
+}
+
 const handleSubmit = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
   await formEl.validate(async (valid) => {
@@ -167,7 +206,9 @@ onMounted(() => {
         @keyup.enter="handleSearch"
       />
       <el-button type="primary" icon="Search" @click="handleSearch">搜索</el-button>
-      <el-button type="success" icon="Plus" @click="handleAdd" style="margin-left: 10px;">新增学生</el-button>
+      <el-button type="success" icon="Plus" @click="handleAdd" style="margin-left: 10px;">新增</el-button>
+      <el-button type="warning" icon="Download" @click="handleExport" style="margin-left: 10px;">导出CSV</el-button>
+      <el-button type="danger" icon="Delete" :disabled="selectedIds.length === 0" @click="handleBatchDelete" style="margin-left: 10px;">批量删除</el-button>
     </div>
 
     <el-table
@@ -176,9 +217,15 @@ onMounted(() => {
       border
       style="width: 100%; margin-top: 20px;"
       @sort-change="handleSortChange"
+      @selection-change="handleSelectionChange"
     >
+      <el-table-column type="selection" width="55" />
       <el-table-column prop="student_id" label="学号" width="120" sortable="custom" />
-      <el-table-column prop="name" label="姓名" width="120" />
+      <el-table-column prop="name" label="姓名" width="120">
+        <template #default="scope">
+          <el-link type="primary" @click="handleViewProfile(scope.row)">{{ scope.row.name }}</el-link>
+        </template>
+      </el-table-column>
       <el-table-column prop="gender" label="性别" width="80" align="center">
         <template #default="scope">
           <el-tag :type="scope.row.gender === '男' ? '' : 'danger'">{{ scope.row.gender }}</el-tag>
@@ -276,13 +323,30 @@ onMounted(() => {
         </span>
       </template>
     </el-dialog>
+
+    <!-- 档案抽屉 -->
+    <el-drawer v-model="drawerVisible" :title="`${drawerData?.name || ''}的档案`" size="40%">
+      <div v-if="drawerData">
+        <el-descriptions title="基础信息" :column="2" border>
+          <el-descriptions-item label="学号">{{ drawerData.student_id }}</el-descriptions-item>
+          <el-descriptions-item label="姓名">{{ drawerData.name }}</el-descriptions-item>
+          <el-descriptions-item label="性别">{{ drawerData.gender }}</el-descriptions-item>
+          <el-descriptions-item label="年龄">{{ drawerData.age }}</el-descriptions-item>
+          <el-descriptions-item label="专业">{{ drawerData.major }}</el-descriptions-item>
+          <el-descriptions-item label="年级">{{ drawerData.grade }}</el-descriptions-item>
+          <el-descriptions-item label="联系方式">{{ drawerData.contact }}</el-descriptions-item>
+          <el-descriptions-item label="GPA">{{ drawerData.gpa }}</el-descriptions-item>
+          <el-descriptions-item label="入学日期">{{ drawerData.enrollment_date }}</el-descriptions-item>
+        </el-descriptions>
+      </div>
+    </el-drawer>
   </div>
 </template>
 
 <style scoped>
 .app-container {
   padding: 20px;
-  background-color: #fff;
+  background-color: var(--el-bg-color);
   border-radius: 4px;
 }
 .filter-container {

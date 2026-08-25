@@ -56,6 +56,31 @@ def test_login_fail():
     )
     assert response.status_code == 401
 
+def test_export_students():
+    login_res = client.post(
+        "/token",
+        data={"username": "testadmin", "password": "testpassword"},
+    )
+    token = login_res.json()["access_token"]
+    headers = {"Authorization": f"Bearer {token}"}
+
+    response = client.get(f"/students/export?token={token}")
+    assert response.status_code == 200
+    assert response.headers["content-type"] == "text/csv; charset=utf-8"
+    assert "ID,学号,姓名,性别" in response.text
+
+def test_system_audit_logs():
+    login_res = client.post(
+        "/token",
+        data={"username": "testadmin", "password": "testpassword"},
+    )
+    token = login_res.json()["access_token"]
+    headers = {"Authorization": f"Bearer {token}"}
+
+    response = client.get("/system/audit-logs", headers=headers)
+    assert response.status_code == 200
+    assert "total" in response.json()
+
 def test_create_read_student():
     # Login first
     login_res = client.post(

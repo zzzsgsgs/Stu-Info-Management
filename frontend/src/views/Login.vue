@@ -31,7 +31,8 @@ const handleLogin = async (formEl: FormInstance | undefined) => {
         formData.append('username', loginForm.username)
         formData.append('password', loginForm.password)
 
-        const res = await axios.post('http://localhost:8000/token', formData, {
+        const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
+        const res = await axios.post(`${baseURL}/token`, formData, {
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
         })
 

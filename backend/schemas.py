@@ -60,3 +60,44 @@ class Student(StudentBase):
 class PaginatedStudentResponse(BaseModel):
     total: int
     items: list[Student]
+
+# Course Schemas
+class CourseBase(BaseModel):
+    course_code: str
+    name: str
+    credits: int
+    department: str
+    teacher: str
+
+class CourseCreate(CourseBase):
+    pass
+
+class Course(CourseBase):
+    id: int
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+class PaginatedCourseResponse(BaseModel):
+    total: int
+    items: list[Course]
+
+# AuditLog Schemas
+class AuditLogBase(BaseModel):
+    username: str
+    action: str
+    entity_type: str
+    entity_id: Optional[str]
+    details: Optional[str]
+
+class AuditLog(AuditLogBase):
+    id: int
+    timestamp: datetime
+
+    class Config:
+        from_attributes = True
+
+class PaginatedAuditLogResponse(BaseModel):
+    total: int
+    items: list[AuditLog]

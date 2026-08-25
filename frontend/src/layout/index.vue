@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { useAuthStore } from '../stores/auth'
+import { useThemeStore } from '../stores/theme'
 import { useRoute } from 'vue-router'
 import { onMounted } from 'vue'
 
 const authStore = useAuthStore()
+const themeStore = useThemeStore()
 const route = useRoute()
 
 onMounted(() => {
@@ -31,11 +33,27 @@ onMounted(() => {
           <el-icon><User /></el-icon>
           <span>学生管理</span>
         </el-menu-item>
+        <el-menu-item index="/courses">
+          <el-icon><Reading /></el-icon>
+          <span>课程管理</span>
+        </el-menu-item>
+        <el-menu-item index="/audit-logs">
+          <el-icon><List /></el-icon>
+          <span>审计日志</span>
+        </el-menu-item>
       </el-menu>
     </el-aside>
     <el-container>
       <el-header class="header">
         <div class="header-right">
+          <el-switch
+            v-model="themeStore.isDark"
+            inline-prompt
+            active-text="暗"
+            inactive-text="亮"
+            @change="themeStore.toggleDark"
+            style="margin-right: 20px"
+          />
           <el-dropdown trigger="click">
             <span class="el-dropdown-link userinfo">
               {{ authStore.username || 'Admin' }}
@@ -65,23 +83,24 @@ onMounted(() => {
   height: 100vh;
 }
 .aside {
-  background-color: #304156;
+  background-color: var(--el-bg-color-overlay);
+  border-right: 1px solid var(--el-border-color-light);
 }
 .logo {
   height: 60px;
   line-height: 60px;
   text-align: center;
-  color: #fff;
+  color: var(--el-text-color-primary);
   font-size: 18px;
   font-weight: bold;
-  border-bottom: 1px solid #1f2d3d;
+  border-bottom: 1px solid var(--el-border-color-light);
 }
 .el-menu-vertical {
   border-right: none;
 }
 .header {
-  background-color: #fff;
-  border-bottom: 1px solid #e6e6e6;
+  background-color: var(--el-bg-color);
+  border-bottom: 1px solid var(--el-border-color-light);
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -91,7 +110,7 @@ onMounted(() => {
   cursor: pointer;
   display: flex;
   align-items: center;
-  color: #606266;
+  color: var(--el-text-color-regular);
 }
 /* transition */
 .fade-transform-leave-active,

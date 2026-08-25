@@ -1,7 +1,7 @@
 import random
 from datetime import date, timedelta
 from database import SessionLocal
-from models import User, Student
+from models import User, Student, Course, Enrollment, AuditLog
 from auth import get_password_hash
 
 # 示例姓名
@@ -55,9 +55,58 @@ def seed_db():
             students_to_add.append(student)
 
         db.add_all(students_to_add)
+        db.commit() # Commit to get IDs
         print(f"Created 30 mock student records.")
 
-    db.commit()
+    # 3. 检查并生成模拟课程数据
+    if db.query(Course).count() == 0:
+        courses_to_add = [
+            Course(course_code="CS101", name="计算机编程基础", credits=4, department="计算机科学与技术", teacher="王老师"),
+            Course(course_code="MA102", name="高等数学", credits=5, department="数学系", teacher="李老师"),
+            Course(course_code="EN103", name="大学英语", credits=3, department="外语系", teacher="张老师"),
+            Course(course_code="PH104", name="大学物理", credits=4, department="物理系", teacher="刘老师"),
+            Course(course_code="EC105", name="微观经济学", credits=3, department="经济管理学院", teacher="陈老师"),
+        ]
+        db.add_all(courses_to_add)
+        db.commit()
+        print(f"Created mock course records.")
+
+    # 4. 生成模拟选课数据和操作日志
+    if db.query(Enrollment).count() == 0:
+        students = db.query(Student).all()
+        courses = db.query(Course).all()
+
+        enrollments_to_add = []
+        logs_to_add = []
+
+        for student in students:
+            # 随机选 2-4 门课
+            selected_courses = random.sample(courses, random.randint(2, 4))
+            for course in selected_courses:
+                enrollments_to_add.append(
+                    Enrollment(
+                        student_id=student.id,
+                        course_id=course.id,
+                        semester="2023-秋",
+                        score=round(random.uniform(60.0, 100.0), 1)
+                    )
+                )
+            # 添加一些随机的操作日志
+            logs_to_add.append(
+                AuditLog(
+                    username="admin",
+                    action="CREATE",
+                    entity_type="Student",
+                    entity_id=student.student_id,
+                    details=f"Created student via seed"
+                )
+            )
+
+        db.add_all(enrollments_to_add)
+        db.add_all(logs_to_add)
+        db.commit()
+        print(f"Created mock enrollment and audit log records.")
+
     db.close()
     print("Database seeding completed.")
 
