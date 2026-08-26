@@ -196,26 +196,48 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="app-container">
-    <div class="filter-container">
-      <el-input
-        v-model="queryParams.search"
-        placeholder="搜索姓名或专业"
-        style="width: 200px; margin-right: 10px;"
-        clearable
-        @keyup.enter="handleSearch"
-      />
-      <el-button type="primary" icon="Search" @click="handleSearch">搜索</el-button>
-      <el-button type="success" icon="Plus" @click="handleAdd" style="margin-left: 10px;">新增</el-button>
-      <el-button type="warning" icon="Download" @click="handleExport" style="margin-left: 10px;">导出CSV</el-button>
-      <el-button type="danger" icon="Delete" :disabled="selectedIds.length === 0" @click="handleBatchDelete" style="margin-left: 10px;">批量删除</el-button>
+  <div class="bg-white dark:bg-[#1d1e1f] rounded-2xl border border-gray-100 dark:border-gray-800 card-shadow p-6 h-full flex flex-col">
+    <!-- Header Toolbar -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+      <div class="flex items-center">
+        <el-input
+          v-model="queryParams.search"
+          placeholder="搜索姓名或专业..."
+          class="w-64"
+          clearable
+          @keyup.enter="handleSearch"
+        >
+          <template #prefix>
+            <el-icon><Search /></el-icon>
+          </template>
+        </el-input>
+        <el-button type="primary" class="ml-3" @click="handleSearch">
+          查询
+        </el-button>
+      </div>
+
+      <div class="flex items-center space-x-2">
+        <el-button type="primary" icon="Plus" @click="handleAdd" class="hover:-translate-y-0.5 transition-transform duration-200">新增学生</el-button>
+        <el-button type="success" plain icon="Download" @click="handleExport" class="hover:-translate-y-0.5 transition-transform duration-200">导出记录</el-button>
+        <el-button
+          type="danger"
+          plain
+          icon="Delete"
+          :disabled="selectedIds.length === 0"
+          @click="handleBatchDelete"
+          class="hover:-translate-y-0.5 transition-transform duration-200"
+        >
+          批量删除 ({{ selectedIds.length }})
+        </el-button>
+      </div>
     </div>
 
+    <!-- Data Table -->
     <el-table
       v-loading="loading"
       :data="tableData"
-      border
-      style="width: 100%; margin-top: 20px;"
+      stripe
+      class="w-full flex-1"
       @sort-change="handleSortChange"
       @selection-change="handleSelectionChange"
     >
@@ -237,15 +259,20 @@ onMounted(() => {
       <el-table-column prop="contact" label="联系方式" width="150" />
       <el-table-column prop="gpa" label="GPA" width="100" sortable="custom" />
       <el-table-column prop="enrollment_date" label="入学日期" width="120" />
-      <el-table-column label="操作" width="180" fixed="right">
+      <el-table-column label="操作" width="120" fixed="right" align="center">
         <template #default="scope">
-          <el-button size="small" type="primary" icon="Edit" @click="handleEdit(scope.row)">编辑</el-button>
-          <el-button size="small" type="danger" icon="Delete" @click="handleDelete(scope.row)">删除</el-button>
+          <el-tooltip content="编辑详情" placement="top">
+            <el-button type="primary" link icon="Edit" @click="handleEdit(scope.row)" />
+          </el-tooltip>
+          <el-tooltip content="删除记录" placement="top">
+            <el-button type="danger" link icon="Delete" @click="handleDelete(scope.row)" />
+          </el-tooltip>
         </template>
       </el-table-column>
     </el-table>
 
-    <div class="pagination-container" style="margin-top: 20px; text-align: right;">
+    <!-- Pagination -->
+    <div class="mt-6 flex justify-end">
       <el-pagination
         v-model:current-page="queryParams.skip"
         v-model:page-size="queryParams.limit"
@@ -344,13 +371,5 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.app-container {
-  padding: 20px;
-  background-color: var(--el-bg-color);
-  border-radius: 4px;
-}
-.filter-container {
-  display: flex;
-  align-items: center;
-}
+/* Removed old styles, relying on Tailwind */
 </style>

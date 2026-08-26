@@ -32,17 +32,25 @@ onMounted(() => fetchList())
 </script>
 
 <template>
-  <div class="app-container">
-    <h2>课程管理</h2>
-    <el-table v-loading="loading" :data="tableData" border style="width: 100%; margin-top: 20px;">
+  <div class="bg-white dark:bg-[#1d1e1f] rounded-2xl border border-gray-100 dark:border-gray-800 card-shadow p-6 h-full flex flex-col">
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200 m-0">课程大纲</h2>
+      <el-button type="primary" icon="Plus">排课</el-button>
+    </div>
+
+    <el-table v-loading="loading" :data="tableData" stripe class="w-full flex-1">
       <el-table-column prop="course_code" label="课程代码" width="150" />
       <el-table-column prop="name" label="课程名称" />
-      <el-table-column prop="credits" label="学分" width="100" />
+      <el-table-column prop="credits" label="学分" width="100">
+        <template #default="scope">
+          <el-tag type="info" effect="plain">{{ scope.row.credits }} 学分</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column prop="department" label="开课学院" />
       <el-table-column prop="teacher" label="授课教师" />
     </el-table>
 
-    <div class="pagination-container" style="margin-top: 20px; text-align: right;">
+    <div class="mt-6 flex justify-end">
       <el-pagination
         v-model:current-page="queryParams.skip"
         v-model:page-size="queryParams.limit"
@@ -57,9 +65,4 @@ onMounted(() => fetchList())
 </template>
 
 <style scoped>
-.app-container {
-  padding: 20px;
-  background-color: var(--el-bg-color);
-  border-radius: 4px;
-}
 </style>

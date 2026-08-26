@@ -39,22 +39,41 @@ onMounted(() => fetchList())
 </script>
 
 <template>
-  <div class="app-container">
-    <h2>系统审计日志</h2>
-    <el-table v-loading="loading" :data="tableData" border style="width: 100%; margin-top: 20px;">
-      <el-table-column prop="timestamp" label="操作时间" width="200" />
-      <el-table-column prop="username" label="操作人" width="120" />
-      <el-table-column prop="action" label="操作类型" width="120" align="center">
+  <div class="bg-white dark:bg-[#1d1e1f] rounded-2xl border border-gray-100 dark:border-gray-800 card-shadow p-6 h-full flex flex-col">
+    <div class="mb-6 border-b border-gray-100 dark:border-gray-800 pb-4">
+      <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200 m-0">安全审计日志</h2>
+      <p class="text-sm text-gray-500 mt-1">追踪系统内所有核心的数据变更与越权行为。</p>
+    </div>
+
+    <el-table v-loading="loading" :data="tableData" stripe class="w-full flex-1">
+      <el-table-column prop="timestamp" label="操作时间" width="220">
         <template #default="scope">
-          <el-tag :type="getTagType(scope.row.action)">{{ scope.row.action }}</el-tag>
+          <span class="font-mono text-xs">{{ new Date(scope.row.timestamp).toLocaleString() }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="entity_type" label="实体类型" width="120" />
-      <el-table-column prop="entity_id" label="实体ID" width="150" />
-      <el-table-column prop="details" label="详细信息" />
+      <el-table-column prop="username" label="操作人" width="120">
+        <template #default="scope">
+          <div class="flex items-center gap-2">
+            <el-avatar :size="24">{{ scope.row.username.charAt(0).toUpperCase() }}</el-avatar>
+            <span>{{ scope.row.username }}</span>
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column prop="action" label="动作" width="100" align="center">
+        <template #default="scope">
+          <el-tag :type="getTagType(scope.row.action)" effect="dark" size="small">{{ scope.row.action }}</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column prop="entity_type" label="实体" width="120" />
+      <el-table-column prop="entity_id" label="标识" width="150">
+        <template #default="scope">
+          <el-tag type="info" size="small">{{ scope.row.entity_id }}</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column prop="details" label="详细描述" />
     </el-table>
 
-    <div class="pagination-container" style="margin-top: 20px; text-align: right;">
+    <div class="mt-6 flex justify-end">
       <el-pagination
         v-model:current-page="queryParams.skip"
         v-model:page-size="queryParams.limit"
@@ -69,9 +88,4 @@ onMounted(() => fetchList())
 </template>
 
 <style scoped>
-.app-container {
-  padding: 20px;
-  background-color: var(--el-bg-color);
-  border-radius: 4px;
-}
 </style>
