@@ -94,64 +94,70 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div v-loading="loading" class="dashboard-container">
-    <el-row :gutter="20" class="panel-group">
-      <el-col :span="12">
-        <el-card shadow="hover" class="data-panel">
-          <div class="panel-title">总学生人数</div>
-          <div class="panel-num text-primary">{{ stats.total_students }}</div>
-        </el-card>
-      </el-col>
-      <el-col :span="12">
-        <el-card shadow="hover" class="data-panel">
-          <div class="panel-title">平均 GPA</div>
-          <div class="panel-num text-success">{{ stats.average_gpa }}</div>
-        </el-card>
-      </el-col>
-    </el-row>
+  <div v-loading="loading" class="h-full flex flex-col gap-6">
+    <!-- Stat Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div class="bg-white dark:bg-[#1d1e1f] rounded-2xl p-6 border border-gray-100 dark:border-gray-800 card-shadow flex items-center justify-between">
+        <div>
+          <p class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">总学生人数</p>
+          <h3 class="text-3xl font-bold text-gray-900 dark:text-gray-100">{{ stats.total_students }}</h3>
+        </div>
+        <div class="p-3 bg-blue-50 dark:bg-blue-900/30 rounded-xl text-blue-500">
+          <el-icon class="text-2xl"><UserFilled /></el-icon>
+        </div>
+      </div>
 
-    <el-row :gutter="20" class="chart-group">
-      <el-col :span="8">
-        <el-card shadow="hover">
-          <div ref="genderChartRef" class="chart" style="height: 400px;"></div>
-        </el-card>
-      </el-col>
-      <el-col :span="16">
-        <el-card shadow="hover">
-          <div ref="majorChartRef" class="chart" style="height: 400px;"></div>
-        </el-card>
-      </el-col>
-    </el-row>
+      <div class="bg-white dark:bg-[#1d1e1f] rounded-2xl p-6 border border-gray-100 dark:border-gray-800 card-shadow flex items-center justify-between">
+        <div>
+          <p class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">平均 GPA</p>
+          <div class="flex items-baseline gap-2">
+            <h3 class="text-3xl font-bold text-gray-900 dark:text-gray-100">{{ stats.average_gpa }}</h3>
+            <span class="text-xs font-medium text-green-500 bg-green-50 dark:bg-green-900/30 px-2 py-0.5 rounded-full flex items-center">
+              <el-icon><TopRight /></el-icon> 稳定
+            </span>
+          </div>
+        </div>
+        <div class="p-3 bg-green-50 dark:bg-green-900/30 rounded-xl text-green-500">
+          <el-icon class="text-2xl"><DataLine /></el-icon>
+        </div>
+      </div>
+
+      <!-- Placeholder cards for balanced grid -->
+      <div class="bg-white dark:bg-[#1d1e1f] rounded-2xl p-6 border border-gray-100 dark:border-gray-800 card-shadow flex items-center justify-between opacity-70">
+        <div>
+          <p class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">活跃课程</p>
+          <h3 class="text-3xl font-bold text-gray-900 dark:text-gray-100">--</h3>
+        </div>
+        <div class="p-3 bg-purple-50 dark:bg-purple-900/30 rounded-xl text-purple-500">
+          <el-icon class="text-2xl"><Reading /></el-icon>
+        </div>
+      </div>
+
+      <div class="bg-white dark:bg-[#1d1e1f] rounded-2xl p-6 border border-gray-100 dark:border-gray-800 card-shadow flex items-center justify-between opacity-70">
+        <div>
+          <p class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">系统状态</p>
+          <h3 class="text-3xl font-bold text-gray-900 dark:text-gray-100">正常</h3>
+        </div>
+        <div class="p-3 bg-orange-50 dark:bg-orange-900/30 rounded-xl text-orange-500">
+          <el-icon class="text-2xl"><CircleCheckFilled /></el-icon>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1 min-h-[400px]">
+      <div class="bg-white dark:bg-[#1d1e1f] rounded-2xl border border-gray-100 dark:border-gray-800 card-shadow p-6 col-span-1 flex flex-col">
+        <h3 class="font-bold text-lg mb-4 text-gray-800 dark:text-gray-200">性别比例</h3>
+        <div ref="genderChartRef" class="flex-1 w-full"></div>
+      </div>
+      <div class="bg-white dark:bg-[#1d1e1f] rounded-2xl border border-gray-100 dark:border-gray-800 card-shadow p-6 col-span-1 lg:col-span-2 flex flex-col">
+        <h3 class="font-bold text-lg mb-4 text-gray-800 dark:text-gray-200">各专业人数分布</h3>
+        <div ref="majorChartRef" class="flex-1 w-full"></div>
+      </div>
+    </div>
   </div>
 </template>
 
 <style scoped>
-.dashboard-container {
-  padding: 20px;
-}
-.panel-group {
-  margin-bottom: 20px;
-}
-.data-panel {
-  text-align: center;
-  padding: 20px 0;
-}
-.panel-title {
-  color: #909399;
-  font-size: 16px;
-  margin-bottom: 10px;
-}
-.panel-num {
-  font-size: 36px;
-  font-weight: bold;
-}
-.text-primary {
-  color: #409EFF;
-}
-.text-success {
-  color: #67C23A;
-}
-.chart-group {
-  margin-top: 20px;
-}
+/* Removed old styles, using Tailwind */
 </style>

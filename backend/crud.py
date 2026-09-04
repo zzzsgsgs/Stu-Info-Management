@@ -66,6 +66,17 @@ def delete_student(db: Session, student_id: int):
     db.commit()
     return db_student
 
+def log_audit(db: Session, username: str, action: str, entity_type: str, entity_id: str, details: str = None):
+    audit_log = models.AuditLog(
+        username=username,
+        action=action,
+        entity_type=entity_type,
+        entity_id=str(entity_id),
+        details=details
+    )
+    db.add(audit_log)
+    db.commit()
+
 def get_dashboard_stats(db: Session):
     total_students = db.query(models.Student).count()
 
